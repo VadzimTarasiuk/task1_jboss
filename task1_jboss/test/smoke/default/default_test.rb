@@ -10,14 +10,22 @@ describe service('wildfly') do
   it { should be_running }
 end
 
+describe port(8080) do
+  it { should be_listening }
+end
+
 describe command('curl -IL http://12.11.12.11:8080/') do
   its('stdout') { should match /200 OK/ }
 end
 
-describe command('curl -IL http://12.11.12.11:8080/helloworld/') do
+describe command('curl -IL http://12.11.12.11:8080/myhelloworld/') do
   its('stdout') { should match /200 OK/ }
 end
 
 describe command('curl -IL http://12.11.12.11:8080/') do
   its('stdout') { should match /Server: WildFly/ }
+end
+
+describe command('curl -IL http://12.11.12.11:8080/helloworld/hi.jsp') do
+  its('stdout') { should match /200 OK/ }
 end

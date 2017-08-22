@@ -3,12 +3,15 @@
 # Recipe:: default
 #
 # Copyright:: 2017, The Authors, All Rights Reserved.
+node.default['java']['jdk_version']='8'
+include_recipe 'java'
+
 package 'unzip' do
   action :install
 end
-package 'java-1.8.0-openjdk-devel.x86_64' do
-  action :install
-end
+#package 'java-1.8.0-openjdk-devel.x86_64' do
+#  action :install
+#end
 package 'net-tools' do
   action :install
 end
@@ -51,10 +54,20 @@ end
 #Deploying
 bash 'deploy_application' do
   code <<-EOH
-    cp -f /tmp/chef-pkgs/helloworld.war /opt/wildfly-10.1.0.Final/standalone/deployments/
+    cp -f /tmp/chef-pkgs/myhelloworld.war /opt/wildfly-10.1.0.Final/standalone/deployments/
     EOH
-  not_if { ::File.exist?('/opt/wildfly-10.1.0.Final/standalone/deployments/helloworld.war') }
+  not_if { ::File.exist?('/opt/wildfly-10.1.0.Final/standalone/deployments/myhelloworld.war') }
 end
+bash 'deploy_application2' do
+  cwd '/opt/wildfly-10.1.0.Final/standalone/deployments'
+  code <<-EOH
+    wget http://centerkey.com/jboss/HelloWorldWebApp.zip
+    unzip -u ./HelloWorldWebApp.zip -d ./
+    rm -rf HelloWorldWebApp.zip
+    EOH
+  not_if { ::File.exist?('/opt/wildfly-10.1.0.Final/standalone/deployments/HelloWorldWebApp') }
+end
+
 service 'wildfly' do
   action [ :enable, :start ]
   supports :reload => true
@@ -62,6 +75,6 @@ end
 
 bash 'wait_60_seconds' do
   code <<-EOH
-    sleep 30
+    sleep 60
     EOH
 end
