@@ -30,6 +30,7 @@ suites:
   - name: default
     run_list:
       - recipe[task1_jboss::default]
+      - recipe[task3_database::default]
     verifier:
       inspec_tests:
         - test/smoke/default
